@@ -63,13 +63,13 @@ public class Tableau {
 
         atualizarTabela(linhaPivot, colunaPivot);
 
-        return SEM_SOLUCAO;
+        return SOLUCAO_NAO_OTIMA;
     }
 
     private void atualizarTabela(int linhaPivot, int colunaPivot) {
         double valorPivot = tabela[linhaPivot][colunaPivot];
-        double[] valoresDaLinhaPivot = tabela[linhaPivot];
-        double[] valoresDaColunaPivot = tabela[colunaPivot];
+        double[] valoresDaLinhaPivot = new double[colunas];
+        double[] valoresDaColunaPivot = new double[colunas];
         double[] novaLinha = new double[colunas];
 
         System.arraycopy(tabela[linhaPivot], 0 , valoresDaLinhaPivot, 0, colunas);
@@ -86,7 +86,7 @@ public class Tableau {
             if(i != linhaPivot){
                 for(int j = 0; j < colunas; j++){
                     double c = valoresDaColunaPivot[i];
-                    tabela[i][j] = tabela[i][j] - (c * novaLinha[j]);
+                    System.out.println("[" +i + " " + j + "] " + c + " -> " + novaLinha[j]);
                 }
             }
         }
@@ -98,9 +98,9 @@ public class Tableau {
         double menor = razoes[0];
         int indice = 0;
 
-        for(int i = 0; i < razoes.length; i++){
+        for(int i = 1; i < razoes.length; i++){
             if(razoes[i] > 0){
-                if(Double.compare(razoes[i], menor) > 1){
+                if(Double.compare(razoes[i], menor) < 0){
                     menor = razoes[i];
                     indice = i;
                 }
@@ -122,6 +122,7 @@ public class Tableau {
                 valoresPositivos[i] = 0;
                 contadorNegativos++;
             }
+            System.out.println(valoresPositivos[i]);
         }
 
         if(contadorNegativos == linhas){
@@ -129,7 +130,9 @@ public class Tableau {
         } else {
             for(int i = 0; i < linhas; i++){
                 double valor = valoresPositivos[i];
-                razoes[i] = tabela[i][colunas-1] / valor;
+                if(valor > 0) {
+                    razoes[i] = tabela[i][colunas - 1] / valor;
+                }
             }
         }
 
