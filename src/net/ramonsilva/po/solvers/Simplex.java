@@ -1,5 +1,8 @@
 package net.ramonsilva.po.solvers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by ramonsilva on 01/05/17.
  */
@@ -16,6 +19,9 @@ public class Simplex {
 
     private double[][] tabela;
 
+    List<Double> variaveisNaoBasicas;
+    List<Double> variaveisBasicas;
+
     public Simplex(int numVariaveisDeDecisao, int numRestricoesTecnicas){
         linhas = numRestricoesTecnicas + 1;
         colunas = numVariaveisDeDecisao + 1;
@@ -25,6 +31,9 @@ public class Simplex {
         for(int i = 0;i < linhas; i++){
             tabela[i] = new double[colunas];
         }
+
+        variaveisBasicas = new ArrayList<>();
+        variaveisNaoBasicas = new ArrayList<>();
     }
 
 
