@@ -3,7 +3,7 @@ package net.ramonsilva.po.solvers;
 /**
  * Created by ramonsilva on 01/05/17.
  */
-public class Tableau {
+public class Simplex {
 
     public static final int SOLUCAO_NAO_OTIMA = 0;
     public static final int SOLUCAO_OTIMA = 1;
@@ -16,7 +16,7 @@ public class Tableau {
 
     private double[][] tabela;
 
-    public Tableau(int numVariaveisDeDecisao, int numRestricoesTecnicas){
+    public Simplex(int numVariaveisDeDecisao, int numRestricoesTecnicas){
         linhas = numRestricoesTecnicas + 1;
         colunas = numVariaveisDeDecisao + 1;
 
@@ -45,26 +45,42 @@ public class Tableau {
         }
     }
 
+
+    /** Calcula a solução do Simplex
+     *  esse método será chamado repetidas vezes dentro
+     *  de um loop, até encontrar uma solução ótima
+     *  ou detectar que não há solução viável
+    */
     public int computar(){
+
+        //Passo 1 :Checar a solução atual
         if(checarOtimilidade()){
            return SOLUCAO_OTIMA;
         }
 
+
+        //Passo 2 : encotrar a coluna que será o pivot
+        // variável não básica que entrará na base
         int colunaPivot = determinarVariavelQueEntraNaBase();
+        System.out.println("");
         System.out.println("Coluna Pivot : " + colunaPivot);
+        System.out.println("");
 
+        // Passo 3
+        // encontrar a varivél que sai da base
         double[] razoes = calcularRazoes(colunaPivot);
-
         if(solucaoInviavel){
             return SEM_SOLUCAO;
         }
 
+        // Passo 4
+        // formar a nova tabela para a prtóxima iteração
         int linhaPivot = menorDentreAs(razoes);
-
         atualizarTabela(linhaPivot, colunaPivot);
 
         return SOLUCAO_NAO_OTIMA;
     }
+
 
     private void atualizarTabela(int linhaPivot, int colunaPivot) {
         double valorPivot = tabela[linhaPivot][colunaPivot];
@@ -72,25 +88,32 @@ public class Tableau {
         double[] valoresDaColunaPivot = new double[colunas];
         double[] novaLinha = new double[colunas];
 
+        // Divide todas os valores da linha pivot por valores da coluna pivot
+        //Obter entrada na linha pivô
         System.arraycopy(tabela[linhaPivot], 0 , valoresDaLinhaPivot, 0, colunas);
 
+        // Obter os valores da coluna pivot
         for(int i = 0; i < linhas; i++){
             valoresDaColunaPivot[i] = tabela[i][colunaPivot];
         }
 
-        for(int i =0; i < colunaPivot; i++){
+        // divide todos os valores da linha pivot pelo valor do pivot
+        for(int i =0; i < colunas; i++){
             novaLinha[i] = valoresDaLinhaPivot[i] / valorPivot;
         }
 
+        // Subtraindo de cada uma das outras linhas
         for(int i = 0; i < linhas; i++){
             if(i != linhaPivot){
                 for(int j = 0; j < colunas; j++){
                     double c = valoresDaColunaPivot[i];
-                    System.out.println("[" +i + " " + j + "] " + c + " -> " + novaLinha[j]);
+                    //System.out.println("[" +i + " " + j + "] " + c + " -> " + novaLinha[j]);
+                    tabela[i][j] = tabela[i][j] - (c * novaLinha[j]);
                 }
             }
         }
 
+        //Substituindo a linha
         System.arraycopy(novaLinha, 0, tabela[linhaPivot], 0, novaLinha.length);
     }
 
@@ -122,7 +145,7 @@ public class Tableau {
                 valoresPositivos[i] = 0;
                 contadorNegativos++;
             }
-            System.out.println(valoresPositivos[i]);
+            //System.out.println(valoresPositivos[i]);
         }
 
         if(contadorNegativos == linhas){
@@ -139,24 +162,27 @@ public class Tableau {
         return razoes;
     }
 
+    /**
+     * Encontra qual variável não básica deve entrar para a base
+     */
     private int determinarVariavelQueEntraNaBase() {
         double[] valores = new double[colunas];
         int indice = 0;
-        int contador = 0;
+        int pos, contador = 0;
 
-        for(int posicao = 0; posicao < colunas -1; posicao++){
-            if(tabela[linhas-1][posicao] < 0){
+        for(pos = 0; pos < colunas-1; pos++){
+            if(tabela[linhas-1][pos] < 0){
                 contador++;
             }
+        }
 
-            if(contador > 1){
-                for(int i = 0; i < contador; i++){
-                    valores[i] = Math.abs(tabela[linhas-1][i]);
-                    indice = maiorDentreOs(valores);
-                }
-            } else {
-                indice = -1;
+        if(contador > 1){
+            for(int i = 0; i < colunas-1; i++) {
+                valores[i] = Math.abs(tabela[linhas - 1][i]);
             }
+            indice = maiorDentreOs(valores);
+        } else {
+            indice = contador - 1;
         }
 
         return indice;
@@ -176,6 +202,10 @@ public class Tableau {
         return indice;
     }
 
+    /**
+     * Verifica se a soluyção encontra nesta iteração é
+     * a solução ótima
+     */
     private boolean checarOtimilidade() {
         boolean solucaoOtima = false;
 

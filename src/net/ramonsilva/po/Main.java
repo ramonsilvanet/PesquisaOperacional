@@ -1,6 +1,6 @@
 package net.ramonsilva.po;
 
-import net.ramonsilva.po.solvers.Tableau;
+import net.ramonsilva.po.solvers.Simplex;
 
 public class Main {
 
@@ -22,27 +22,36 @@ public class Main {
                 {-3,  -5,    0,  0,   0}
         };
 
-        Tableau simplex = new Tableau(4, 2);
+        Simplex simplex = new Simplex(4, 2);
         simplex.preencherTabela(sistemaLinear);
 
         System.out.println("--- Iniciando ---");
         simplex.mostrarTabela();
 
-        int solucao = Tableau.SOLUCAO_NAO_OTIMA;
+        int solucao = Simplex.SOLUCAO_NAO_OTIMA;
 
-        while (solucao == Tableau.SOLUCAO_NAO_OTIMA){
+        while (solucao == Simplex.SOLUCAO_NAO_OTIMA){
             solucao = simplex.computar();
 
-            if(solucao == Tableau.SEM_SOLUCAO){
-                System.out.println("Sistema sem solução viável");
+
+            if(solucao == Simplex.SOLUCAO_OTIMA ) {
+                System.out.println("Solução ótima [SOLUÇÃO LIMITIDA]");
+                System.out.println("");
+                break;
+            } else if(solucao ==  Simplex.SEM_SOLUCAO){
+                System.out.println("Sistema sem solução viável. [SOLUÇÃO ILIMITADA]");
+                System.out.println("");
+                break;
+            } else {
+                System.out.println("Solução não ótima");
+                System.out.println("");
             }
 
-            if(solucao == Tableau.SOLUCAO_OTIMA){
-                System.out.println("Solução ótima");
-                simplex.mostrarTabela();
-            }
+            simplex.mostrarTabela();
         }
 
+
+        simplex.mostrarTabela();
 
     }
 }
