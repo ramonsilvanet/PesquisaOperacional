@@ -43,7 +43,7 @@ public class Main {
                 System.out.println("");
                 break;
             } else {
-                System.out.println("Solução não ótima");
+                //System.out.println("Solução não ótima");
                 System.out.println("");
             }
 

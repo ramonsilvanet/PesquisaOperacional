@@ -71,9 +71,10 @@ public class Simplex {
         //Passo 2 : encotrar a coluna que será o pivot
         // variável não básica que entrará na base
         int colunaPivot = determinarVariavelQueEntraNaBase();
-        System.out.println("");
+
+        /*System.out.println("");
         System.out.println("Coluna Pivot : " + colunaPivot);
-        System.out.println("");
+        System.out.println("");*/
 
         // Passo 3
         // encontrar a varivél que sai da base
@@ -132,7 +133,7 @@ public class Simplex {
 
         for(int i = 1; i < razoes.length; i++){
             if(razoes[i] > 0){
-                if(Double.compare(razoes[i], menor) < 0){
+                if(Double.compare(razoes[i], menor) < 0 || menor == 0){
                     menor = razoes[i];
                     indice = i;
                 }
@@ -162,7 +163,7 @@ public class Simplex {
         } else {
             for(int i = 0; i < linhas; i++){
                 double valor = valoresPositivos[i];
-                if(valor > 0) {
+                if(valor > 0 && tabela[i][colunas - 1] != 0) {
                     razoes[i] = tabela[i][colunas - 1] / valor;
                 }
             }
