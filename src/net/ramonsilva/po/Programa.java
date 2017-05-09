@@ -71,6 +71,8 @@ public class Programa {
             simplex.mostrarTabela();
         }
 
+        simplex.mostrarSolucao();
+
         long fim = System.currentTimeMillis();
 
         System.out.println("Tempo de execução : " + (fim - inicio) + " ms");

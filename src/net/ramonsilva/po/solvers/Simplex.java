@@ -1,7 +1,9 @@
 package net.ramonsilva.po.solvers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by ramonsilva on 01/05/17.
@@ -19,8 +21,8 @@ public class Simplex {
 
     private double[][] tabela;
 
-    List<Double> variaveisNaoBasicas;
-    List<Double> variaveisBasicas;
+    Map<Integer, Double> variaveisNaoBasicas;
+    Map<Integer, Double> variaveisBasicas;
 
     public Simplex(int numVariaveisDeDecisao, int numRestricoesTecnicas){
         linhas = numRestricoesTecnicas + 1;
@@ -32,8 +34,8 @@ public class Simplex {
             tabela[i] = new double[colunas];
         }
 
-        variaveisBasicas = new ArrayList<>();
-        variaveisNaoBasicas = new ArrayList<>();
+        variaveisBasicas = new HashMap<>();
+        variaveisNaoBasicas = new HashMap<>();
     }
 
 
@@ -51,6 +53,14 @@ public class Simplex {
     public void preencherTabela(double [][] dados){
         for(int i =0; i < tabela.length; i++){
             System.arraycopy(dados[i], 0, this.tabela[i],0, dados[i].length);
+        }
+
+        for (int i = 0; i < colunas; i++) {
+            if(tabela[linhas-1][i] != 0){
+                variaveisNaoBasicas.put(i, tabela[linhas-1][i]);
+            } else {
+                variaveisBasicas.put(i, tabela[linhas-1][i]);
+            }
         }
     }
 
@@ -125,6 +135,10 @@ public class Simplex {
 
         //Substituindo a linha
         System.arraycopy(novaLinha, 0, tabela[linhaPivot], 0, novaLinha.length);
+
+        //Atualizando base e nao base
+        variaveisBasicas.remove(colunaPivot);
+        variaveisBasicas.put(colunaPivot, tabela[linhaPivot][colunaPivot]);
     }
 
     private int menorDentreAs(double[] razoes) {
@@ -233,5 +247,18 @@ public class Simplex {
         }
 
         return solucaoOtima;
+    }
+
+    public void mostrarSolucao(){
+        System.out.println();
+        System.out.println("Variaveis basicas");
+
+        for(int i : variaveisBasicas.keySet()){
+            if(variaveisBasicas.get(i) == 1.0){
+                System.out.println("x" + (i+1) + " = " + tabela[i][colunas-1]);
+            }
+        }
+
+        System.out.println();
     }
 }
